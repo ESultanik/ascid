@@ -1,8 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Except as otherwise commented in this code, ascid is licensed under the GNU GPL v2
 # and is Copyright 2014, Evan A. Sultanik, Ph.D.
 # See the accompanying LICENSE file for the full text of the license.
+
+import sys
 
 # The following code, up until the END_MIT comment, is being redistributed from
 # the py-rstr-max project: https://code.google.com/p/py-rstr-max/
@@ -28,6 +30,10 @@
 
 from array import array
 
+if sys.version_info.major >= 3:
+    xrange = range
+
+
 def direct_kark_sort(s) :
     alphabet = [None] + sorted(set(s))
     k = len(alphabet)
@@ -36,6 +42,7 @@ def direct_kark_sort(s) :
     SA = array('i', [0]*(n+3))
     kark_sort(array('i', [t[c] for c in s]+[0]*3), SA, n, k)
     return SA[:n]
+
 
 def radixpass(a, b, r, s, n, k) :
     c = array("i", [0]*(k+1))
@@ -51,10 +58,11 @@ def radixpass(a, b, r, s, n, k) :
         b[c[r[a[i]+s]]] = a[i]
         c[r[a[i]+s]] += 1
 
+
 def kark_sort(s, SA, n, K):
-    n0  = (n+2) / 3
-    n1  = (n+1) / 3
-    n2  = n / 3
+    n0  = (n+2) // 3
+    n1  = (n+1) // 3
+    n2  = n // 3
     n02 = n0 + n2
       
     SA12 = array('i', [0]*(n02+3))
@@ -77,9 +85,9 @@ def kark_sort(s, SA, n, K):
             c1 = s[SA12[i]+1]
             c2 = s[SA12[i]+2]
         if SA12[i] % 3 == 1 :
-            s12[SA12[i]/3] = name
+            s12[SA12[i]//3] = name
         else :
-            s12[SA12[i]/3 + n0] = name
+            s12[SA12[i]//3 + n0] = name
 
     if name < n02 :
         kark_sort(s12, SA12, n02, name+1)
@@ -99,9 +107,9 @@ def kark_sort(s, SA, n, K):
         j = SA0[p] if p < n0 else 0
 
         if SA12[t] < n0 :
-            test = (s12[SA12[t]+n0] <= s12[j/3]) if(s[i]==s[j]) else (s[i] < s[j])
+            test = (s12[SA12[t]+n0] <= s12[j//3]) if(s[i]==s[j]) else (s[i] < s[j])
         elif(s[i]==s[j]) :
-            test = s12[SA12[t]-n0+1] <= s12[j/3 + n0] if(s[i+1]==s[j+1]) else s[i+1] < s[j+1]
+            test = s12[SA12[t]-n0+1] <= s12[j//3 + n0] if(s[i+1]==s[j+1]) else s[i+1] < s[j+1]
         else :
             test = s[i] < s[j]
 
@@ -125,6 +133,7 @@ def kark_sort(s, SA, n, K):
                     t += 1
                     k += 1
         k += 1
+
 
 class Rstr_max :
     def __init__(self) :
@@ -245,8 +254,9 @@ class Rstr_max :
 
 # END_MIT
 
+
 if __name__ == "__main__":
-    import argparse, sys
+    import argparse
     parser = argparse.ArgumentParser(description='ascid is the self-referential cycle identifier')
     
     parser.add_argument('FILE', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
@@ -259,10 +269,14 @@ if __name__ == "__main__":
     longest = -1
     s = None
     offsets = None
-    for (offset_end, nb), (l, start_plage) in r.iteritems():
+    if sys.version_info.major < 3:
+        items = r.iteritems()
+    else:
+        items = r.items()
+    for (offset_end, nb), (l, start_plage) in items:
         if l > longest:
             longest = l
             s = rstr.global_suffix[offset_end-l:offset_end].encode('utf-8')
             offsets = [rstr.idxPos[rstr.res[o]] for o in range(start_plage, start_plage + nb)]
-    print "Found %i occurrences of the following string at offsets %s:" % (len(offsets), offsets)
-    print s
+    print("Found %i occurrences of the following string at offsets %s:" % (len(offsets), offsets))
+    print(repr(s))
