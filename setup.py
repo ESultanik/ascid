@@ -23,6 +23,9 @@ setup(
             'ascid = ascid.__main__:main'
         ]
     },
+    extras_require={
+        "dev": ["flake8", "setuptools"]
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
