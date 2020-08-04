@@ -14,7 +14,10 @@ def main(argv=None):
 
     args = parser.parse_args(argv[1:])
 
-    s, offsets = find_repeating_strings(args.FILE.read())
+    try:
+        s, offsets = find_repeating_strings(args.FILE.read())
 
-    print("Found %i occurrences of the following string at offsets %s:" % (len(offsets), offsets))
-    print(repr(s))
+        print("Found %i occurrences of the following string at offsets %s:" % (len(offsets), offsets))
+        print(repr(s))
+    except KeyboardInterrupt:
+        pass
